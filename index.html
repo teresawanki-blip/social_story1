@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>校園社交大歷險</title>
+    <title>校園社交大歷險：換位思考與社交過濾器</title>
     <style>
         * {
             box-sizing: border-box;
@@ -28,6 +28,51 @@
             display: flex;
             flex-direction: column;
         }
+
+        /* 封面頁特定樣式 */
+        .intro-section {
+            line-height: 1.6;
+            color: #2d3748;
+        }
+        .intro-title {
+            color: #2b6cb0;
+            font-size: 24px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .intro-subtitle {
+            font-size: 18px;
+            color: #2c5282;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .intro-list {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        .intro-list li {
+            margin-bottom: 8px;
+        }
+        .btn-start-game {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+        }
+        .btn-start-game:hover {
+            background-color: #2b6cb0;
+            transform: translateY(-2px);
+        }
+
+        /* 遊戲介面樣式 */
         .header {
             text-align: center;
             border-bottom: 2px solid #e2e8f0;
@@ -116,21 +161,42 @@
 <body>
 
 <div id="game-container">
-    <div class="header">
-        <h1>🏫 校園社交大歷險</h1>
-        <div class="status-bar">
-            <span id="step-count">關卡：1 / 8</span>
-            <span id="score-count">社交好感度：50</span>
-        </div>
+    <!-- 1. 封面介紹頁面 (預設顯示) -->
+    <div id="intro-screen" class="intro-section">
+        <h1 class="intro-title">🏫 校園社交大歷險（8關卡綜合實踐版）</h1>
+        <p>專為初中 ASD 學生設計的社交小組互動遊戲，透過情境選擇題讓學生體會「換位思考」、「大腦社交過濾器」與「社交禮儀」的重要性。</p>
+        
+        <div class="intro-subtitle">🌟 課程目標</div>
+        <ul class="intro-list">
+            <li>學習社交距離與眼神接觸</li>
+            <li>建立大腦社交過濾器（說話前先過濾）</li>
+            <li>練習換位思考與情緒調節</li>
+        </ul>
+
+        <div class="intro-subtitle">🎮 如何遊玩</div>
+        <p>點擊下方按鈕即可直接在瀏覽器開始遊玩：</p>
+        
+        <button class="btn-start-game" onclick="launchGame()">點我開始遊玩 🚀</button>
     </div>
 
-    <div class="story-box" id="story">故事載入中...</div>
+    <!-- 2. 遊戲主畫面 (預設隱藏) -->
+    <div id="game-screen" style="display: none;">
+        <div class="header">
+            <h1>🏫 校園社交大歷險</h1>
+            <div class="status-bar">
+                <span id="step-count">關卡：1 / 8</span>
+                <span id="score-count">社交好感度：50</span>
+            </div>
+        </div>
 
-    <div class="options-container" id="options"></div>
+        <div class="story-box" id="story">故事載入中...</div>
 
-    <div class="feedback-box" id="feedback"></div>
+        <div class="options-container" id="options"></div>
 
-    <button class="btn-restart" id="restart-btn" onclick="startGame()">重新開始挑戰</button>
+        <div class="feedback-box" id="feedback"></div>
+
+        <button class="btn-restart" id="restart-btn" onclick="startGame()">重新開始挑戰</button>
+    </div>
 </div>
 
 <script>
@@ -140,18 +206,18 @@ let currentSceneId = "L1_START";
 const storyTree = {
     "L1_START": {
         level: 1,
-        scene: "【關卡 1：分組挑戰】\n美術課要兩人一組。阿樂走過來問：「我可以跟你一組嗎？但我畫畫不太好看……」\n你會怎麼回應？",
+        scene: "【關卡 1：分組邀請】\n美術課要兩人一組。阿樂走過來問：「我可以跟你一組嗎？但我畫畫不太好看……」\n你會怎麼回應？",
         options: [
             {
                 text: "A. 「你好笨喔，連畫畫都不會，跟你一組很拉垮耶。」",
                 scoreChange: -20,
-                feedback: "💡 社交過濾網：這句話直接攻擊了對方的能力，阿樂聽完非常難過並低下了頭。",
+                feedback: "💡 大腦過濾器：這句話沒有經過過濾，直接傷害了對方的感受，阿樂聽完非常難過。",
                 nextScene: "L2_RUDE"
             },
             {
                 text: "B. 「……（低頭看手機/桌面，完全不理會他）」",
                 scoreChange: -10,
-                feedback: "💡 社交空氣：缺乏眼神接觸與回應會讓對方覺得尷尬，以為你討厭他。",
+                feedback: "💡 眼神與回應：沒有眼神接觸和回應會讓對方覺得尷尬，以為你討厭他。",
                 nextScene: "L2_PASSIVE"
             },
             {
@@ -169,26 +235,26 @@ const storyTree = {
             {
                 text: "A. 「幹嘛啦！本來就是事實啊，哭什麼哭。」",
                 scoreChange: -20,
-                feedback: "💡 衝動控制：這樣講只會讓衝突升級，大家會覺得你很難相處。",
+                feedback: "💡 情緒控制：這樣講只會讓衝突升級，大家會覺得你很難相處。",
                 nextScene: "L3_SOLO"
             },
             {
                 text: "B. 「不好意思，我剛才說話太衝了……我們一起試試看吧。」",
                 scoreChange: +15,
-                feedback: "🌟 社交過濾網：你使用了「大腦過濾器」進行語言轉化，及時挽回了局面！",
+                feedback: "🌟 大腦過濾器：你及時發現講錯話，並重新表達，及時挽回了局面！",
                 nextScene: "L3_COMMON"
             },
             {
                 text: "C. （裝作沒事，翻個白眼走開）",
                 scoreChange: -15,
-                feedback: "💡 肢體語言：白眼是不友善的肢體訊號，大家都不敢靠近你了。",
+                feedback: "💡 肢體語言：翻白眼是不友善的肢體訊號，大家都不敢靠近你了。",
                 nextScene: "L3_SOLO"
             }
         ]
     },
     "L2_PASSIVE": {
         level: 2,
-        scene: "【關卡 2：破冰嘗試】\n阿樂站在那裡站了10秒，不知所措地問：「那……你到底願不願意一組？」\n你這時的反應是？",
+        scene: "【關卡 2：眼神與回應】\n阿樂站在那裡站了10秒，不知所措地問：「那……你到底願不願意一組？」\n你這時會如何回應？",
         options: [
             {
                 text: "A. 「看著他的眉心」說：「可以啊，剛才我在想事情，不好意思。」",
@@ -205,228 +271,235 @@ const storyTree = {
             {
                 text: "C. 「不要，我想自己一個人。」",
                 scoreChange: -15,
-                feedback: "💡 團體融入：拒絕同儕會讓你失去建立友好關係的機會。",
+                feedback: "💡 團體融入：直接拒絕同儕會讓你失去建立友好關係的機會。",
                 nextScene: "L3_SOLO"
             }
         ]
     },
     "L2_FRIENDLY": {
         level: 2,
-        scene: "【關卡 2：話題延續】\n阿樂高興地坐下來：「太好了！那你平時喜歡什麼畫風啊？」\n你會如何回應並延續話題？",
+        scene: "【關卡 2：話題輪流】\n阿樂高興地坐下來：「太好了！那你平時喜歡什麼畫風啊？」\n你會如何回應並延續話題？",
         options: [
             {
                 text: "A. 「我只喜歡鐵路/動漫，其他的都很爛啦！」（開始獨白10分鐘）",
                 scoreChange: -10,
-                feedback: "💡 社交輪流：壟斷話題會讓對方無法參與討論。",
+                feedback: "💡 話題輪流：獨佔話題會讓對方無法參與，記得說完要輪到對方。",
                 nextScene: "L3_COMMON"
             },
             {
                 text: "B. 「我比較喜歡動漫風，你呢？你有喜歡的漫畫嗎？」",
                 scoreChange: +15,
-                feedback: "🌟 話題接力：你用了「你呢？」問句，展現了對對方的興趣！",
+                feedback: "🌟 話題接力：你用了「你呢？」問句，給對方說話機會，展現了互相溝通！",
                 nextScene: "L3_COMMON"
             },
             {
                 text: "C. 「都可以啊。」（講完就閉嘴）",
                 scoreChange: -5,
-                feedback: "💡 話題延續：簡短回答是「句點王」，對話很難繼續下去。",
+                feedback: "💡 話題延續：回答太簡短會讓對話停頓，很難繼續交流。",
                 nextScene: "L3_COMMON"
             }
         ]
     },
     "L3_SOLO": {
         level: 3,
-        scene: "【關卡 3：孤立狀態的轉機】\n因為剛才的互動，沒有人敢找你分組，老師幫你指定阿樂為組員。阿樂坐得很遠（超過兩臂距離）。\n你打算如何縮短距離？",
+        scene: "【關卡 3：社交距離】\n因為剛才的互動，沒有人敢找你分組，老師幫你指定阿樂為組員。阿樂坐得很遠（超過兩臂距離）。\n你打算如何調整距離？",
         options: [
             {
                 text: "A. 主動搬椅子移到「一臂長度」，說：「剛才不好意思，我們討論主題吧。」",
                 scoreChange: +15,
-                feedback: "🌟 魔法距離：你掌握了一臂長的社交安全氣泡，並勇於道歉！",
+                feedback: "🌟 社交距離：你精準掌握了一臂長的適當距離，讓溝通更順暢！",
                 nextScene: "L4_THEME"
             },
             {
                 text: "B. 直接坐到他旁邊，貼著他的肩膀坐。",
                 scoreChange: -10,
-                feedback: "💡 個人氣泡：距離過近會侵犯對方的個人空間，讓人感到被脅迫。",
+                feedback: "💡 個人空間：距離太近會侵犯對方的個人空間，讓人感到不舒服。",
                 nextScene: "L4_THEME"
             },
             {
                 text: "C. 繼續隔著三公尺大聲對他喊：「欸！你要畫什麼啦！」",
                 scoreChange: -15,
-                feedback: "💡 音量與距離：在教室大聲吼叫是不適當的音量控制。",
+                feedback: "💡 音量控制：距離太遠大聲喊叫是不適當的溝通方式。",
                 nextScene: "L4_THEME"
             }
         ]
     },
     "L3_COMMON": {
         level: 3,
-        scene: "【關卡 3：觀察社交空氣】\n你們準備討論主題，阿樂一邊看手錶、一邊頻繁看向教室門口。\n你察覺到這個肢體訊號了嗎？你會？",
+        scene: "【關卡 3：觀察對方狀態】\n你們準備討論主題，阿樂一邊看手錶、一邊頻繁看向教室門口。\n你注意到他的舉動了嗎？你會？",
         options: [
             {
-                text: "A. 「你一直看手錶，是不是想先去上廁所/拿東西？我們可以等一下再聊。」",
+                text: "A. 「你一直看手錶，是不是想先去上廁所/拿東西？我可以等一下。」",
                 scoreChange: +15,
-                feedback: "🌟 社交雷達：你成功捕捉到對方的肢體微反應，並展現了同理心！",
+                feedback: "🌟 換位思考：你觀察到了對方的動作並主動關心，非常有同理心！",
                 nextScene: "L4_THEME"
             },
             {
                 text: "B. 完全無視，繼續講自己的繪畫構想。",
                 scoreChange: -10,
-                feedback: "💡 社交空氣：忽視對方的肢體訊號會讓人覺得你不關心他。",
+                feedback: "💡 觀察微細表情：忽視對方的行為會讓人覺得你不關心他。",
                 nextScene: "L4_THEME"
             },
             {
                 text: "C. 生氣說：「你一直看手錶很沒禮貌耶！」",
                 scoreChange: -15,
-                feedback: "💡 我訊息：這屬於指責性語言，可以用更溫和的方式詢問。",
+                feedback: "💡 大腦過濾器：直接批評會讓氣氛僵硬，可以用關心的語氣問問看。",
                 nextScene: "L4_THEME"
             }
         ]
     },
     "L4_THEME": {
         level: 4,
-        scene: "【關卡 4：意見不合】\n阿樂提出了一個你覺得非常無聊的主題點子。\n你要如何表達不同意見？",
+        scene: "【關卡 4：不同意見的表達】\n阿樂提出了一個你覺得非常無聊的主題點子。\n你要如何表達不同意見？",
         options: [
             {
                 text: "A. 「這點子超爛的，完全不想畫這個。」",
                 scoreChange: -20,
-                feedback: "💡 社交過濾網：這是未過濾的直白攻擊，會讓人感到受傷。",
+                feedback: "💡 大腦過濾器：這是未經思考的直白批評，會讓對方感到難過。",
                 nextScene: "L5_CONFLICT"
             },
             {
                 text: "B. 「這個點子滿特別的！但我比較想嘗試科幻風，你覺得呢？」",
                 scoreChange: +15,
-                feedback: "🌟 建設性轉化：你用了「先肯定、後建議」的過濾句型！",
+                feedback: "🌟 說話技巧：你使用了「先讚賞、後建議」的方式，說話非常得體！",
                 nextScene: "L5_SMOOTH"
             },
             {
                 text: "C. 算了吧，隨便你，反正爛掉也是你的事。",
                 scoreChange: -15,
-                feedback: "💡 換位思考：消極態度會嚴重打擊小組合作的士氣。",
+                feedback: "💡 換位思考：消極態度會打擊合作氣氛，讓組員感到無奈。",
                 nextScene: "L5_CONFLICT"
             }
         ]
     },
     "L5_CONFLICT": {
         level: 5,
-        scene: "【關卡 5：情緒暴走考驗】\n因為意見不合，阿樂也有點生氣，說話聲音變大了。你感覺大腦有一股怒火升起。\n你這時會怎麼做？",
+        scene: "【關卡 5：情緒冷靜機制】\n因為意見不合，阿樂也有點生氣，聲音變大了。你感覺大腦有一股怒火升起。\n你這時會怎麼做？",
         options: [
             {
-                text: "A. 使用「 Pause 暫停卡」，深呼吸3秒並握緊舒壓球。",
+                text: "A. 先停下來，深呼吸3秒，讓自己冷靜一下。",
                 scoreChange: +15,
-                feedback: "🌟 衝動控制：太棒了！你使用了情緒緩衝機制，避免了暴怒打架。",
-                nextScene: "L6_IMESSAGE"
+                feedback: "🌟 情緒管理：太棒了！你使用了冷靜機制，成功避免了吵架爆發！",
+                nextScene: "L6_EXPRESS"
             },
             {
                 text: "B. 大聲拍桌子：「你大小聲什麼啦！」",
                 scoreChange: -20,
-                feedback: "💡 衝動控制：情緒暴走會破壞人際關係，也會被老師懲罰。",
-                nextScene: "L6_IMESSAGE"
+                feedback: "💡 情緒管理：衝動大喊會破壞關係，也會讓事情變得更複雜。",
+                nextScene: "L6_EXPRESS"
             },
             {
-                text: "C. 趴在桌上拒絕溝通，完全擺爛。",
+                text: "C. 趴在桌上拒絕溝通，完全不理人。",
                 scoreChange: -15,
-                feedback: "💡 冷處理：擺爛無法解決衝突，會讓問題越來越嚴重。",
-                nextScene: "L6_IMESSAGE"
+                feedback: "💡 溝通表達：放棄溝通無法解決問題，會讓氣氛一直很沉重。",
+                nextScene: "L6_EXPRESS"
             }
         ]
     },
     "L5_SMOOTH": {
         level: 5,
-        scene: "【關卡 5：巧妙的協商】\n阿樂猶豫地說：「可是科幻風有點難畫耶……」\n你會如何用同理心與他協商？",
+        scene: "【關卡 5：同理與鼓勵】\n阿樂猶豫地說：「可是科幻風有點難畫耶……」\n你會如何展現同理心與他合作？",
         options: [
             {
                 text: "A. 「別擔心，難畫的部分交給我，你幫我塗顏色，我們一起完成！」",
                 scoreChange: +15,
-                feedback: "🌟 展現同理心：你解決了對方的擔憂，給予了安全感！",
-                nextScene: "L6_IMESSAGE"
+                feedback: "🌟 換位思考：你體諒對方的擔憂，並主動分擔，非常有團隊精神！",
+                nextScene: "L6_EXPRESS"
             },
             {
                 text: "B. 「這有什麼難的？你真笨。」",
                 scoreChange: -15,
-                feedback: "💡 語言轉化：這句話破壞了剛建立好的良好信任。",
-                nextScene: "L6_IMESSAGE"
+                feedback: "💡 大腦過濾器：這句話傷害了對方的自信心，破壞了原本的信任。",
+                nextScene: "L6_EXPRESS"
             },
             {
                 text: "C. 「那不然隨便畫個簡單的就好了。」",
                 scoreChange: 0,
-                feedback: "💡 溝通表達：雖然平息了問題，但沒有激發合作熱情。",
-                nextScene: "L6_IMESSAGE"
+                feedback: "💡 合作熱情：雖然解決了問題，但缺少了一點互相支持的感覺。",
+                nextScene: "L6_EXPRESS"
             }
         ]
     },
-    "L6_IMESSAGE": {
+    "L6_EXPRESS": {
         level: 6,
-        scene: "【關卡 6：意外發生與拒絕】\n畫畫時，阿樂不小心把顏料水打翻，弄髒了你的筆記本。你感到很煩躁。\n你要如何使用「我訊息（I-Message）」表達？",
+        scene: "【關卡 6：處理意外與表達感受】\n畫畫時，阿樂不小心把顏料水打翻，弄髒了你的筆記本。你感到很煩躁。\n你會如何表達你的感受？",
         options: [
             {
                 text: "A. 「你很粗心耶！弄髒我的東西了啦！」",
                 scoreChange: -15,
-                feedback: "💡 攻擊性語言：「你訊息」只會讓對方升起防禦心態。",
-                nextScene: "L7_GROUP"
+                feedback: "💡 說話口氣：直接指責會讓對方防禦心重，容易起爭執。",
+                nextScene: "L7_REACTION"
             },
             {
-                text: "B. 「我覺得有點心疼，因為這筆記很用心寫，我希望我們能把水杯放遠一點。」",
+                text: "B. 「我有點心疼，因為這本子我很用心寫，我們一起拿抹布擦乾淨吧。」",
                 scoreChange: +20,
-                feedback: "🌟 我訊息句型：【感受+事實+需求】，精準表達且不攻擊人！",
-                nextScene: "L7_GROUP"
+                feedback: "🌟 溫和表達：你冷靜說出感受並提出解決方法，非常成熟！",
+                nextScene: "L7_REACTION"
             },
             {
                 text: "C. 氣到拿走所有用品，跑去跟別組坐。",
                 scoreChange: -20,
-                feedback: "💡 衝突處理：逃避並不能解決問題，會讓同儕關係更惡化。",
-                nextScene: "L7_GROUP"
+                feedback: "💡 解決問題：直接走開不能解決問題，還會讓對方手足無措。",
+                nextScene: "L7_REACTION"
             }
         ]
     },
-    "L7_GROUP": {
+    "L7_REACTION": {
         level: 7,
-        scene: "【關卡 7：隔壁小組的玩笑】\n隔壁同學湊過來看你們的畫，笑著說：「哇，你們畫的這隻狗好像怪獸喔哈哈！」\n你要如何區分「玩笑」與「欺凌」，並冷靜回應？",
+        scene: "【關卡 7：面對他人的話語】\n隔壁同學湊過來看你們的畫，笑著說：「哇，你們畫的這隻狗好像怪獸喔哈哈！」\n你會如何冷靜幽默地回應？",
         options: [
             {
-                text: "A. 判定為玩笑，笑著回應：「對啊！這是我們特別設計的怪獸狗，酷吧！」",
+                text: "A. 笑著回應：「對啊！這是我們特別設計的超酷怪獸狗！」",
                 scoreChange: +15,
-                feedback: "🌟 社交解讀：你成功分辨出無惡意的玩笑，並用幽默融入對話！",
+                feedback: "🌟 幽默應對：你展現了大方與幽默，讓氣氛變得輕鬆歡樂！",
                 nextScene: "L8_FINAL"
             },
             {
-                text: "B. 判定為欺凌，暴怒大喊：「你在霸凌我們！我要告訴老師！」",
+                text: "B. 暴怒大喊：「你幹嘛嘲笑我們！我要告訴老師！」",
                 scoreChange: -10,
-                feedback: "💡 社交解讀：過度敏感會讓同儕不敢再跟你開玩笑或互動。",
+                feedback: "💡 情緒反應：同學可能只是開玩笑，反應太過激烈會讓大家尷尬。",
                 nextScene: "L8_FINAL"
             },
             {
-                text: "C. 判定為過濾對象，中立說：「我覺得這很可愛啊，我們繼續畫吧。」",
+                text: "C. 平靜地說：「我覺得這很可愛啊，我們繼續畫我們的吧。」",
                 scoreChange: +10,
-                feedback: "🌟 冷靜應對：以冷靜且自信的態度回應，不受影響。",
+                feedback: "🌟 自信應對：不輕易受別人話語影響，專注在自己的事情上。",
                 nextScene: "L8_FINAL"
             }
         ]
     },
     "L8_FINAL": {
         level: 8,
-        scene: "【關卡 8：最後作品發表】\n海報完成了！老師請大家互相讚美組員。這是建立穩定友誼的最後時刻！\n你會對阿樂說什麼？",
+        scene: "【關卡 8：肯定與感謝】\n作品終於完成了！老師請大家互相讚美組員。\n你會對阿樂說什麼話？",
         options: [
             {
                 text: "A. 「今天跟你一組很開心，你上色的部分幫了大忙，謝謝你！」",
                 scoreChange: +20,
-                feedback: "🌟 友誼結盟：真誠的讚美是建立長遠夥伴關係的終極武器！",
+                feedback: "🌟 真誠讚美：真誠的感謝是建立良好友誼最好的一步！",
                 nextScene: "END"
             },
             {
                 text: "B. 「終於畫完了，累死了，下次我不要再畫畫了。」",
                 scoreChange: 0,
-                feedback: "💡 社交結尾：缺乏對組員的回饋，錯失了深化關係的機會。",
+                feedback: "💡 結尾技巧：只講自己的感覺，缺少了對合作夥伴的回饋。",
                 nextScene: "END"
             },
             {
                 text: "C. 「雖然你畫得滿爛的，但至少有完成啦。」",
                 scoreChange: -15,
-                feedback: "💡 社交過濾網：最後一刻還是沒有過濾傷人的話，太可惜了！",
+                feedback: "💡 大腦過濾器：最後一刻還是講了傷害人的話，太可惜了！",
                 nextScene: "END"
             }
         ]
     }
 };
+
+// 點擊「點我開始遊玩」時切換頁面
+function launchGame() {
+    document.getElementById("intro-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "block";
+    startGame();
+}
 
 function startGame() {
     score = 50;
@@ -489,20 +562,18 @@ function showEnding() {
 
     if (score >= 100) {
         endingTitle = "🏆 結局 A：完美社交大師（解鎖黃金夥伴）";
-        endingDesc = "你完美運用了「社交過濾器」、「換位思考」與「我訊息」！阿樂對你無比信任，其他同學也極力爭取下次要跟你同一組。你成功建立起了穩固的同儕支持圈！";
+        endingDesc = "你完美運用了「大腦社交過濾器」、「換位思考」與適當的社交禮儀！阿樂對你無比信任，你成功建立起了良好的同儕互動！";
     } else if (score >= 65) {
         endingTitle = "😐 結局 B：漸入佳境的合作者";
-        endingDesc = "雖然過程中有一點摩擦與直白的言語，但你成功靠著修補技巧完成任務。只要多加練習「大腦過濾網」，你的社交魅力會更上一層樓！";
+        endingDesc = "雖然過程中有一點直白的言語，但你成功靠著修補技巧與冷靜態度完成任務。多練習「大腦過濾網」，你的社交魅力會更上一層樓！";
     } else {
         endingTitle = "💔 結局 C：獨行俠的迷思";
-        endingDesc = "直白的批評、忽視眼神與衝動的情緒讓這次合作充滿火藥味。阿樂最後默默離開了。請記住：試著站在對方角度想想看，社交會變得完全不一樣！";
+        endingDesc = "直白的批評與忽視對方的感受讓這次合作充滿尷尬。請記住：多使用大腦過濾器並站在對方角度想想看，社交會變得更順暢！";
     }
 
     storyBox.innerHTML = `<strong>${endingTitle}</strong><br><br>${endingDesc}<br><br><strong>最終社交好感度：${score} 分</strong>`;
     document.getElementById("restart-btn").style.display = "block";
 }
-
-startGame();
 </script>
 
 </body>

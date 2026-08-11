@@ -9,4 +9,4 @@
 
 ## 🎮 如何遊玩
 點擊下方連結即可直接在瀏覽器遊玩：
-[點我開始遊玩](https://你的GitHub帳號.github.io/專案名稱/)
+[點我開始遊玩](https://teresawanki-blip.github.io/social_story1/)

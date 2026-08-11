@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校園社交大歷險 </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        #game-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2b6cb0;
+            margin: 0 0 8px 0;
+            font-size: 22px;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: bold;
+        }
+        .story-box {
+            background-color: #ebf8ff;
+            border-left: 5px solid #3182ce;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2d3748;
+            margin-bottom: 20px;
+            min-height: 110px;
+            white-space: pre-line;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-option {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: left;
+            font-size: 15px;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+        .btn-option:hover:not(:disabled) {
+            border-color: #3182ce;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+        .btn-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .feedback-box {
+            background-color: #feebc8;
+            border-left: 5px solid #dd6b20;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #742a2a;
+            display: none;
+            line-height: 1.5;
+        }
+        .btn-restart {
+            margin-top: 20px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .btn-restart:hover {
+            background-color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="header">
+        <h1>🏫 校園社交大歷險（8關卡篇）</h1>
+        <div class="status-bar">
+            <span id="step-count">關卡：1 / 8</span>
+            <span id="score-count">社交好感度：50</span>
+        </div>
+    </div>
+
+    <div class="story-box" id="story">故事加載中...</div>
+
+    <div class="options-container" id="options"></div>
+
+    <div class="feedback-box" id="feedback"></div>
+
+    <button class="btn-restart" id="restart-btn" onclick="startGame()">重新開始挑戰</button>
+</div>
+
+<script>
+let score = 50;
+let currentLevelIndex = 1; 
+let currentSceneId = "L1_START";
+
+// 8個關卡的分支故事樹
+const storyTree = {
+    // ===== 關卡 1 =====
+    "L1_START": {
+        level: 1,
+        scene: "【關卡 1：分組挑戰】\n美術課要兩人一組。阿樂走過來問：「我可以跟你一組嗎？但我畫畫不太好看……」\n你會怎麼回應？",
+        options: [
+            {
+                text: "A. 「你好笨喔，連畫畫都不會，跟你一組很拉垮耶。」",
+                scoreChange: -20,
+                feedback: "💡 社交過濾網：這句話直接攻擊了對方的能力，阿樂聽完非常難過並低下了頭。",
+                nextScene: "L2_RUDE"
+            },
+            {
+                text: "B. 「……（低頭看手機/桌面，完全不理會他）」",
+                scoreChange: -10,
+                feedback: "💡 社交空氣：缺乏眼神接觸與回應會讓對方覺得尷尬，以為你討厭他。",
+                nextScene: "L2_PASSIVE"
+            },
+            {
+                text: "C. 「沒關係啊！我們一起畫，你可以負責想主題，我來負責畫！」",
+                scoreChange: +15,
+                feedback: "🌟 換位思考：你展現了包容，並幫對方找到能發揮的地方，阿樂鬆了一口氣！",
+                nextScene: "L2_FRIENDLY"
+            }
+        ]
+    },
+
+    // ===== 關卡 2 (因應關卡1的抉擇產生不同發展) =====
+    "L2_RUDE": {
+        level: 2,
+        scene: "【關卡 2：修補氣氛】\n阿樂被你說完後眼眶泛紅，轉身準備走開。全班同學都在看著你，氣氛很尷尬。\n你現在會怎麼做？",
+        options: [
+            {
+                text: "A. 「幹嘛啦！本來就是事實啊，哭什麼哭。」",
+                scoreChange: -20,
+                feedback: "💡 衝動控制：這樣講只會讓衝突升級，大家會覺得你很難相處。",
+                nextScene: "L3_SOLO"
+            },
+            {
+                text: "B. 「不好意思，我剛才說話太衝了……我們一起試試看吧。」",
+                scoreChange: +15,
+                feedback: "🌟 社交過濾網：你使用了「大腦過濾器」進行語言轉化，及時挽回了局面！",
+                nextScene: "L3_COMMON"
+            },
+            {
+                text: "C. （裝作沒事，翻個白眼走開）",
+                scoreChange: -15,
+                feedback: "💡 肢體語言：白眼是不友善的肢體訊號，大家都不敢靠近你了。",
+                nextScene: "L3_SOLO"
+            }
+        ]
+    },
+    "L2_PASSIVE": {
+        level: 2,
+        scene: "【關卡 2：破冰嘗試】\n阿樂站在那裡站了10秒，不知所措地問：「那……你到底願不願意一組？」\n你這時的反應是？",
+        options: [
+            {
+                text: "A. 「看著他的眉心」說：「可以啊，剛才我在想事情，不好意思。」",
+                scoreChange: +10,
+                feedback: "🌟 眼神技巧：你使用了「看眉心」眼神法，讓對方感到被尊重。",
+                nextScene: "L3_COMMON"
+            },
+            {
+                text: "B. 「隨便啦，反正也沒別人了。」",
+                scoreChange: -10,
+                feedback: "💡 換位思考：這話聽起來像勉為其難，會讓人感到不被重視。",
+                nextScene: "L3_COMMON"
+            },
+            {
+                text: "C. 「不要，我想自己一個人。」",
+                scoreChange: -15,
+                feedback: "💡 團體融入：拒絕同儕會讓你失去建立友好關係的機會。",
+                nextScene: "L3_SOLO"
+            }
+        ]
+    },
+    "L2_FRIENDLY": {
+        level: 2,
+        scene: "【關卡 2：話題延續】\n阿樂高興地坐下來：「太好了！那你平時喜歡什麼畫風啊？」\n你會如何回應並延續話題？",
+        options: [
+            {
+                text: "A. 「我只喜歡鐵路/動漫，其他的都很爛啦！」（開始獨白10分鐘）",
+                scoreChange: -10,
+                feedback: "💡 社交輪流： monopolizing（壟斷話題）會讓對方無法參與討論。",
+                nextScene: "L3_COMMON"
+            },
+            {
+                text: "B. 「我比較喜歡動漫風，你呢？你有喜歡的漫畫嗎？」",
+                scoreChange: +15,
+                feedback: "🌟 話題接力：你用了「你呢？」問句，展現了對對方的興趣！",
+                nextScene: "L3_COMMON"
+            },
+            {
+                text: "C. 「都可以啊。」（講完就閉嘴）",
+                scoreChange: -5,
+                feedback: "💡 話題延續：簡短回答是「句點王」，對話很難繼續下去。",
+                nextScene: "L3_COMMON"
+            }
+        ]
+    },
+
+    // ===== 關卡 3 =====
+    "L3_SOLO": {
+        level: 3,
+        scene: "【關卡 3：孤立狀態的轉機】\n因為剛才的互動，沒有人敢找你分組，老師幫你指定阿樂為組員。阿樂坐得很遠（超過兩臂距離）。\n你打算如何縮短距離？",
+        options: [
+            {
+                text: "A. 主動搬椅子移到「一臂長度」，說：「剛才不好意思，我們討論主題吧。」",
+                scoreChange: +15,
+                feedback: "🌟 魔法距離：你掌握了一臂長的社交安全氣泡，並勇於道歉！",
+                nextScene: "L4_THEME"
+            },
+            {
+                text: "B. 直接坐到他旁邊，貼著他的肩膀坐。",
+                scoreChange: -10,
+                feedback: "💡 個人氣泡：距離過近會侵犯對方的個人空間，讓人感到被脅迫。",
+                nextScene: "L4_THEME"
+            },
+            {
+                text: "C. 繼續隔著三公尺大聲對他喊：「欸！你要畫什麼啦！」",
+                scoreChange: -15,
+                feedback: "💡 音量與距離：在教室大聲吼叫是不適當的音量控制。",
+                nextScene: "L4_THEME"
+            }
+        ]
+    },
+    "L3_COMMON": {
+        level: 3,
+        scene: "【關卡 3：觀察社交空氣】\n你們準備討論主題，阿樂一邊看手錶、一邊頻繁看向教室門口。\n你察覺到這個肢體訊號了嗎？你會？",
+        options: [
+            {
+                text: "A. 「你一直看手錶，是不是想先去上廁所/拿東西？我們可以等一下再聊。」",
+                scoreChange: +15,
+                feedback: "🌟 社交雷達：你成功捕捉到對方的肢體微反應，並展現了同理心！",
+                nextScene: "L4_THEME"
+            },
+            {
+                text: "B. 完全無視，繼續講自己的繪畫構想。",
+                scoreChange: -10,
+                feedback: "💡 社交空氣：忽視對方的肢體訊號會讓人覺得你不關心他。",
+                nextScene: "L4_THEME"
+            },
+            {
+                text: "C. 生氣說：「你一直看手錶很沒禮貌耶！」",
+                scoreChange: -15,
+                feedback: "💡 我訊息：這屬於指責性語言，可以用更溫和的方式詢問。",
+                nextScene: "L4_THEME"
+            }
+        ]
+    },
+
+    // ===== 關卡 4 =====
+    "L4_THEME": {
+        level: 4,
+        scene: "【關卡 4：意見不合】\n阿樂提出了一個你覺得非常無聊的主題點子。\n你要如何表達不同意見？",
+        options: [
+            {
+                text: "A. 「這點子超爛的，完全不想畫這個。」",
+                scoreChange: -20,
+                feedback: "💡 社交過濾網：這是未過濾的直白攻擊，會讓人感到受傷。",
+                nextScene: "L5_CONFLICT"
+            },
+            {
+                text: "B. 「這個點子滿特別的！但我比較想嘗試科幻風，你覺得呢？」",
+                scoreChange: +15,
+                feedback: "🌟 建設性轉化：你用了「先肯定、後建議」的過濾句型！",
+                nextScene: "L5_SMOOTH"
+            },
+            {
+                text: "C. 算了吧，隨便你，反正爛掉也是你的事。",
+                scoreChange: -15,
+                feedback: "💡 換位思考：消極態度會嚴重打擊小組合作的士氣。",
+                nextScene: "L5_CONFLICT"
+            }
+        ]
+    },
+
+    // ===== 關卡 5 =====
+    "L5_CONFLICT": {
+        level: 5,
+        scene: "【關卡 5：情緒暴走考驗】\n因為意見不合，阿樂也有點生氣，說話聲音變大了。你感覺大腦有一股怒火升起。\n你這時會怎麼做？",
+        options: [
+            {
+                text: "A. 使用「 Pause 暫停卡」，深呼吸3秒並握緊舒壓球。",
+                scoreChange: +15,
+                feedback: "🌟 衝動控制：太棒了！你使用了情緒緩衝機制，避免了暴怒打架。",
+                nextScene: "L6_IMESSAGE"
+            },
+            {
+                text: "B. 大聲拍桌子：「你大小聲什麼啦！」",
+                scoreChange: -20,
+                feedback: "💡 衝動控制：情緒暴走會破壞人際關係，也會被老師懲罰。",
+                nextScene: "L6_IMESSAGE"
+            },
+            {
+                text: "C. 趴在桌上拒絕溝通，完全擺爛。",
+                scoreChange: -15,
+                feedback: "💡 冷處理：擺爛無法解決衝突，會讓問題越來越嚴重。",
+                nextScene: "L6_IMESSAGE"
+            }
+        ]
+    },
+    "L5_SMOOTH": {
+        level: 5,
+        scene: "【關卡 5：巧妙的協商】\n阿樂猶豫地說：「可是科幻風有點難畫耶……」\n你會如何用同理心與他協商？",
+        options: [
+            {
+                text: "A. 「別擔心，難畫的部分交給我，你幫我塗顏色，我們一起完成！」",
+                scoreChange: +15,
+                feedback: "🌟 展現同理心：你解決了對方的擔憂，給予了安全感！",
+                nextScene: "L6_IMESSAGE"
+            },
+            {
+                text: "B. 「這有什麼難的？你真笨。」",
+                scoreChange: -15,
+                feedback: "💡 語言轉化：這句話破壞了剛建立好的良好信任。",
+                nextScene: "L6_IMESSAGE"
+            },
+            {
+                text: "C. 「那不然隨便畫個簡單的就好了。」",
+                scoreChange: 0,
+                feedback: "💡 溝通表達：雖然平息了問題，但沒有激發合作熱情。",
+                nextScene: "L6_IMESSAGE"
+            }
+        ]
+    },
+
+    // ===== 關卡 6 =====
+    "L6_IMESSAGE": {
+        level: 6,
+        scene: "【關卡 6：意外發生與拒絕】\n畫畫時，阿樂不小心把顏料水打翻，弄髒了你的筆記本。你感到很煩躁。\n你要如何使用「我訊息（I-Message）」表達？",
+        options: [
+            {
+                text: "A. 「你很粗心耶！弄髒我的東西了啦！」",
+                scoreChange: -15,
+                feedback: "💡 攻擊性語言：「你訊息」只會讓對方升起防禦心態。",
+                nextScene: "L7_GROUP"
+            },
+            {
+                text: "B. 「我覺得有點心疼，因為這筆記很用心寫，我希望我們能把水杯放遠一點。」",
+                scoreChange: +20,
+                feedback: "🌟 我訊息句型：【感受+事實+需求】，精準表達且不攻擊人！",
+                nextScene: "L7_GROUP"
+            },
+            {
+                text: "C. 氣到拿走所有用品，跑去跟別組坐。",
+                scoreChange: -20,
+                feedback: "💡 衝突處理：逃避並不能解決問題，會讓同儕關係更惡化。",
+                nextScene: "L7_GROUP"
+            }
+        ]
+    },
+
+    // ===== 關卡 7 =====
+    "L7_GROUP": {
+        level: 7,
+        scene: "【關卡 7：隔壁小組的玩笑】\n隔壁同學湊過來看你們的畫，笑著說：「哇，你們畫的這隻狗好像怪獸喔哈哈！」\n你要如何區分「玩笑」與「欺凌」，並冷靜回應？",
+        options: [
+            {
+                text: "A. 判定為玩笑，笑著回應：「對啊！這是我們特別設計的怪獸狗，酷吧！」",
+                scoreChange: +15,
+                feedback: "🌟 社交解讀：你成功分辨出無惡意的玩笑，並用幽默融入對話！",
+                nextScene: "L8_FINAL"
+            },
+            {
+                text: "B. 判定為欺凌，暴怒大喊：「你在霸凌我們！我要告訴老師！」",
+                scoreChange: -10,
+                feedback: "💡 社交解讀：過度敏感會讓同儕不敢再跟你開玩笑或互動。",
+                nextScene: "L8_FINAL"
+            },
+            {
+                text: "C. 判定為過濾對象，中立說：「我覺得這很可愛啊，我們繼續畫吧。」",
+                scoreChange: +10,
+                feedback: "🌟 冷靜應對：以冷靜且自信的態度回應，不受影響。",
+                nextScene: "L8_FINAL"
+            }
+        ]
+    },
+
+    // ===== 關卡 8 (終極任務) =====
+    "L8_FINAL": {
+        level: 8,
+        scene: "【關卡 8：最後作品發表】\n海報完成了！老師請大家互相讚美組員。這是建立穩定友誼的最後時刻！\n你會對阿樂說什麼？",
+        options: [
+            {
+                text: "A. 「今天跟你一組很開心，你上色的部分幫了大忙，謝謝你！」",
+                scoreChange: +20,
+                feedback: "🌟 友誼結盟：真誠的讚美是建立長遠夥伴關係的終極武器！",
+                nextScene: "END"
+            },
+            {
+                text: "B. 「終於畫完了，累死了，下次我不要再畫畫了。」",
+                scoreChange: 0,
+                feedback: "💡 社交結尾：缺乏對組員的回饋，錯失了深化關係的機會。",
+                nextScene: "END"
+            },
+            {
+                text: "C. 「雖然你畫得滿爛的，但至少有完成啦。」",
+                scoreChange: -15,
+                feedback: "💡 社交過濾網：最後一刻還是沒有過濾傷人的話，太可惜了！",
+                nextScene: "END"
+            }
+        ]
+    }
+};
+
+function startGame() {
+    score = 50;
+    currentLevelIndex = 1;
+    currentSceneId = "L1_START";
+    document.getElementById("restart-btn").style.display = "none";
+    showScene();
+}
+
+function showScene() {
+    document.getElementById("feedback").style.display = "none";
+    
+    if (currentSceneId === "END") {
+        showEnding();
+        return;
+    }
+
+    const currentData = storyTree[currentSceneId];
+    
+    document.getElementById("step-count").innerText = `關卡：${currentData.level} / 8`;
+    document.getElementById("score-count").innerText = `社交好感度：${score}`;
+    document.getElementById("story").innerText = currentData.scene;
+
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = "";
+
+    currentData.options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.className = "btn-option";
+        btn.innerText = opt.text;
+        btn.onclick = () => makeChoice(opt);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function makeChoice(option) {
+    score += option.scoreChange;
+    document.getElementById("score-count").innerText = `社交好感度：${score}`;
+
+    const feedbackBox = document.getElementById("feedback");
+    feedbackBox.innerText = option.feedback;
+    feedbackBox.style.display = "block";
+
+    // 禁用所有按鈕防止重複點擊
+    const buttons = document.querySelectorAll(".btn-option");
+    buttons.forEach(btn => btn.disabled = true);
+
+    setTimeout(() => {
+        currentSceneId = option.nextScene;
+        showScene();
+    }, 3200); // 3.2秒後跳轉到對應的分支關卡
+}
+
+function showEnding() {
+    document.getElementById("step-count").innerText = "挑戰完成";
+    const storyBox = document.getElementById("story");
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = "";
+
+    let endingTitle = "";
+    let endingDesc = "";
+
+    if (score >= 100) {
+        endingTitle = "🏆 結局 A：完美社交大師（解鎖黃金夥伴）";
+        endingDesc = "你完美運用了「社交過濾器」、「換位思考」與「我訊息」！阿樂對你無比信任，其他同學也極力爭取下次要跟你同一組。你成功建立起了穩固的同儕支持圈！";
+    } else if (score >= 65) {
+        endingTitle = "😐 結局 B：漸入佳境的合作者";
+        endingDesc = "雖然過程中有一點摩擦與直白的言語，但你成功靠著修補技巧完成任務。只要多加練習「大腦過濾網」，你的社交魅力會更上一層樓！";
+    } else {
+        endingTitle = "💔 结局 C：獨行俠的迷思";
+        endingDesc = "直白的批評、忽視眼神與衝動的情緒讓這次合作充滿火藥味。阿樂最後默默離開了。請記住：試著站在對方角度想想看，社交會變得完全不一樣！";
+    }
+
+    storyBox.innerHTML = `<strong>${endingTitle}</strong><br><br>${endingDesc}<br><br><strong>最終社交好感度：${score} 分</strong>`;
+    document.getElementById("restart-btn").style.display = "block";
+}
+
+// 啟動遊戲
+startGame();
+</script>
+
+</body>
+</html>

@@ -23,7 +23,7 @@
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 750px; /* 稍微放寬容器，讓大字體更舒適 */
+            max-width: 750px;
             padding: 28px;
             display: flex;
             flex-direction: column;
@@ -33,17 +33,17 @@
         .intro-section {
             line-height: 1.8;
             color: #2d3748;
-            font-size: 18px; /* 大字體 */
+            font-size: 18px;
         }
         .intro-title {
             color: #2b6cb0;
-            font-size: 28px; /* 大標題 */
+            font-size: 28px;
             border-bottom: 3px solid #e2e8f0;
             padding-bottom: 12px;
             margin-top: 0;
         }
         .intro-subtitle {
-            font-size: 22px; /* 副標題 */
+            font-size: 22px;
             color: #2c5282;
             margin-top: 22px;
             margin-bottom: 12px;
@@ -62,7 +62,7 @@
             border: none;
             border-radius: 10px;
             padding: 16px 28px;
-            font-size: 22px; /* 按鈕大字 */
+            font-size: 22px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
@@ -84,12 +84,12 @@
         .header h1 {
             color: #2b6cb0;
             margin: 0 0 10px 0;
-            font-size: 26px; /* 標題放大 */
+            font-size: 26px;
         }
         .status-bar {
             display: flex;
             justify-content: space-between;
-            font-size: 18px; /* 狀態列放大 */
+            font-size: 18px;
             color: #4a5568;
             font-weight: bold;
         }
@@ -97,7 +97,7 @@
         /* 圖片容器樣式 */
         .scene-image-container {
             width: 100%;
-            height: 240px; /* 圖片高度微調 */
+            height: 240px;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 18px;
@@ -115,7 +115,7 @@
             border-left: 6px solid #3182ce;
             padding: 18px;
             border-radius: 8px;
-            font-size: 20px; /* 故事文字加大 */
+            font-size: 20px;
             line-height: 1.7;
             color: #2d3748;
             margin-bottom: 22px;
@@ -134,7 +134,7 @@
             border-radius: 10px;
             padding: 16px;
             text-align: left;
-            font-size: 18px; /* 選項文字加大 */
+            font-size: 18px;
             color: #2d3748;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -156,7 +156,7 @@
             padding: 16px;
             border-radius: 8px;
             margin-top: 18px;
-            font-size: 18px; /* 回饋說明文字加大 */
+            font-size: 18px;
             color: #742a2a;
             display: none;
             line-height: 1.6;
@@ -185,7 +185,7 @@
 <div id="game-container">
     <!-- 1. 封面介紹頁面 (預設顯示) -->
     <div id="intro-screen" class="intro-section">
-        <h1 class="intro-title">🏫 校園社交大歷險（8關卡圖文清晰版）</h1>
+        <h1 class="intro-title">🏫 校園社交大歷險（大字體清晰版）</h1>
         <p>專為初中 ASD 學生設計的社交小組互動遊戲，透過情境選擇題讓學生體會「換位思考」、「大腦社交過濾器」與「社交禮儀」的重要性。</p>
         
         <div class="intro-subtitle">🌟 課程目標</div>
@@ -227,7 +227,7 @@
 </div>
 
 <script>
-let score = 50;
+let score = 50; // 起始底分 50 分
 let currentSceneId = "L1_START";
 
 const storyTree = {
@@ -533,7 +533,6 @@ const storyTree = {
     }
 };
 
-// 點擊「點我開始遊玩」時切換頁面
 function launchGame() {
     document.getElementById("intro-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "block";
@@ -541,7 +540,7 @@ function launchGame() {
 }
 
 function startGame() {
-    score = 50;
+    score = 50; // 重置底分為 50 分
     currentSceneId = "L1_START";
     document.getElementById("restart-btn").style.display = "none";
     showScene();
@@ -560,8 +559,6 @@ function showScene() {
     document.getElementById("step-count").innerText = `關卡：${currentData.level} / 8`;
     document.getElementById("score-count").innerText = `社交好感度：${score}`;
     document.getElementById("story").innerText = currentData.scene;
-    
-    // 更新圖片
     document.getElementById("scene-img").src = currentData.image;
 
     const optionsContainer = document.getElementById("options");
@@ -593,6 +590,7 @@ function makeChoice(option) {
     }, 3200);
 }
 
+/* 五個範疇結局判定邏輯 */
 function showEnding() {
     document.getElementById("step-count").innerText = "挑戰完成";
     const storyBox = document.getElementById("story");
@@ -604,24 +602,16 @@ function showEnding() {
     let endingImage = "";
 
     if (score >= 100) {
-        endingTitle = "🏆 結局 A：完美社交大師（解鎖黃金夥伴）";
-        endingDesc = "你完美運用了「大腦社交過濾器」、「換位思考」與適當的社交禮儀！阿樂對你無比信任，你成功建立起了良好的同儕互動！";
+        // 範疇 1：100分或以上
+        endingTitle = "🏆 結局 A：社交大滿貫（黃金社交大師）";
+        endingDesc = "你完美運用了「大腦社交過濾器」、「換位思考」與適當的社交禮儀！阿樂對你無比信任，你成功建立起了完美的同儕互動！";
         endingImage = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80";
-    } else if (score >= 65) {
-        endingTitle = "😐 結局 B：漸入佳境的合作者";
-        endingDesc = "雖然過程中有一點直白的言語，但你成功靠著修補技巧與冷靜態度完成任務。多練習「大腦過濾網」，你的社交魅力會更上一層樓！";
+    } else if (score >= 70) {
+        // 範疇 2：70 - 99 分
+        endingTitle = "🌟 結局 B：溫和隊友（良好互動者）";
+        endingDesc = "表現相當出色！大部分時間都能注意到社交距離與語言過濾，成功與阿樂建立了和諧且愉快的合作關係！";
         endingImage = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80";
-    } else {
-        endingTitle = "💔 結局 C：獨行俠的迷思";
-        endingDesc = "直白的批評與忽視對方的感受讓這次合作充滿尷尬。請記住：多使用大腦過濾器並站在對方角度想想看，社交會變得更順暢！";
-        endingImage = "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80";
-    }
-
-    document.getElementById("scene-img").src = endingImage;
-    storyBox.innerHTML = `<strong>${endingTitle}</strong><br><br>${endingDesc}<br><br><strong>最終社交好感度：${score} 分</strong>`;
-    document.getElementById("restart-btn").style.display = "block";
-}
-</script>
-
-</body>
-</html>
+    } else if (score >= 40) {
+        // 範疇 3：40 - 69 分
+        endingTitle = "😐 結局 C：磨合中的夥伴（一般互動）";
+        endingDesc = "過程中

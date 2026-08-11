@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 校園社交大歷險 </title>
+    <title>校園社交大歷險</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,7 +16,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
         #game-container {
             background-color: #ffffff;
@@ -50,7 +50,7 @@
             background-color: #ebf8ff;
             border-left: 5px solid #3182ce;
             padding: 16px;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 16px;
             line-height: 1.6;
             color: #2d3748;
@@ -88,7 +88,7 @@
             background-color: #feebc8;
             border-left: 5px solid #dd6b20;
             padding: 12px;
-            border-radius: 4px;
+            border-radius: 8px;
             margin-top: 15px;
             font-size: 14px;
             color: #742a2a;
@@ -117,14 +117,14 @@
 
 <div id="game-container">
     <div class="header">
-        <h1>🏫 校園社交大歷險（8關卡篇）</h1>
+        <h1>🏫 校園社交大歷險</h1>
         <div class="status-bar">
             <span id="step-count">關卡：1 / 8</span>
             <span id="score-count">社交好感度：50</span>
         </div>
     </div>
 
-    <div class="story-box" id="story">故事加載中...</div>
+    <div class="story-box" id="story">故事載入中...</div>
 
     <div class="options-container" id="options"></div>
 
@@ -135,12 +135,9 @@
 
 <script>
 let score = 50;
-let currentLevelIndex = 1; 
 let currentSceneId = "L1_START";
 
-// 8個關卡的分支故事樹
 const storyTree = {
-    // ===== 關卡 1 =====
     "L1_START": {
         level: 1,
         scene: "【關卡 1：分組挑戰】\n美術課要兩人一組。阿樂走過來問：「我可以跟你一組嗎？但我畫畫不太好看……」\n你會怎麼回應？",
@@ -165,8 +162,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 2 (因應關卡1的抉擇產生不同發展) =====
     "L2_RUDE": {
         level: 2,
         scene: "【關卡 2：修補氣氛】\n阿樂被你說完後眼眶泛紅，轉身準備走開。全班同學都在看著你，氣氛很尷尬。\n你現在會怎麼做？",
@@ -222,7 +217,7 @@ const storyTree = {
             {
                 text: "A. 「我只喜歡鐵路/動漫，其他的都很爛啦！」（開始獨白10分鐘）",
                 scoreChange: -10,
-                feedback: "💡 社交輪流： monopolizing（壟斷話題）會讓對方無法參與討論。",
+                feedback: "💡 社交輪流：壟斷話題會讓對方無法參與討論。",
                 nextScene: "L3_COMMON"
             },
             {
@@ -239,8 +234,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 3 =====
     "L3_SOLO": {
         level: 3,
         scene: "【關卡 3：孤立狀態的轉機】\n因為剛才的互動，沒有人敢找你分組，老師幫你指定阿樂為組員。阿樂坐得很遠（超過兩臂距離）。\n你打算如何縮短距離？",
@@ -289,8 +282,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 4 =====
     "L4_THEME": {
         level: 4,
         scene: "【關卡 4：意見不合】\n阿樂提出了一個你覺得非常無聊的主題點子。\n你要如何表達不同意見？",
@@ -315,8 +306,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 5 =====
     "L5_CONFLICT": {
         level: 5,
         scene: "【關卡 5：情緒暴走考驗】\n因為意見不合，阿樂也有點生氣，說話聲音變大了。你感覺大腦有一股怒火升起。\n你這時會怎麼做？",
@@ -365,8 +354,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 6 =====
     "L6_IMESSAGE": {
         level: 6,
         scene: "【關卡 6：意外發生與拒絕】\n畫畫時，阿樂不小心把顏料水打翻，弄髒了你的筆記本。你感到很煩躁。\n你要如何使用「我訊息（I-Message）」表達？",
@@ -391,8 +378,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 7 =====
     "L7_GROUP": {
         level: 7,
         scene: "【關卡 7：隔壁小組的玩笑】\n隔壁同學湊過來看你們的畫，笑著說：「哇，你們畫的這隻狗好像怪獸喔哈哈！」\n你要如何區分「玩笑」與「欺凌」，並冷靜回應？",
@@ -417,8 +402,6 @@ const storyTree = {
             }
         ]
     },
-
-    // ===== 關卡 8 (終極任務) =====
     "L8_FINAL": {
         level: 8,
         scene: "【關卡 8：最後作品發表】\n海報完成了！老師請大家互相讚美組員。這是建立穩定友誼的最後時刻！\n你會對阿樂說什麼？",
@@ -447,7 +430,6 @@ const storyTree = {
 
 function startGame() {
     score = 50;
-    currentLevelIndex = 1;
     currentSceneId = "L1_START";
     document.getElementById("restart-btn").style.display = "none";
     showScene();
@@ -487,14 +469,13 @@ function makeChoice(option) {
     feedbackBox.innerText = option.feedback;
     feedbackBox.style.display = "block";
 
-    // 禁用所有按鈕防止重複點擊
     const buttons = document.querySelectorAll(".btn-option");
     buttons.forEach(btn => btn.disabled = true);
 
     setTimeout(() => {
         currentSceneId = option.nextScene;
         showScene();
-    }, 3200); // 3.2秒後跳轉到對應的分支關卡
+    }, 3200);
 }
 
 function showEnding() {
@@ -513,7 +494,7 @@ function showEnding() {
         endingTitle = "😐 結局 B：漸入佳境的合作者";
         endingDesc = "雖然過程中有一點摩擦與直白的言語，但你成功靠著修補技巧完成任務。只要多加練習「大腦過濾網」，你的社交魅力會更上一層樓！";
     } else {
-        endingTitle = "💔 结局 C：獨行俠的迷思";
+        endingTitle = "💔 結局 C：獨行俠的迷思";
         endingDesc = "直白的批評、忽視眼神與衝動的情緒讓這次合作充滿火藥味。阿樂最後默默離開了。請記住：試著站在對方角度想想看，社交會變得完全不一樣！";
     }
 
@@ -521,7 +502,6 @@ function showEnding() {
     document.getElementById("restart-btn").style.display = "block";
 }
 
-// 啟動遊戲
 startGame();
 </script>
 

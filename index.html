@@ -91,6 +91,23 @@
             color: #4a5568;
             font-weight: bold;
         }
+
+        /* 圖片容器樣式 */
+        .scene-image-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: #e2e8f0;
+        }
+        .scene-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+
         .story-box {
             background-color: #ebf8ff;
             border-left: 5px solid #3182ce;
@@ -100,7 +117,7 @@
             line-height: 1.6;
             color: #2d3748;
             margin-bottom: 20px;
-            min-height: 110px;
+            min-height: 90px;
             white-space: pre-line;
         }
         .options-container {
@@ -163,7 +180,7 @@
 <div id="game-container">
     <!-- 1. 封面介紹頁面 (預設顯示) -->
     <div id="intro-screen" class="intro-section">
-        <h1 class="intro-title">🏫 校園社交大歷險（8關卡綜合實踐版）</h1>
+        <h1 class="intro-title">🏫 校園社交大歷險（8關卡圖文互動版）</h1>
         <p>專為初中 ASD 學生設計的社交小組互動遊戲，透過情境選擇題讓學生體會「換位思考」、「大腦社交過濾器」與「社交禮儀」的重要性。</p>
         
         <div class="intro-subtitle">🌟 課程目標</div>
@@ -189,6 +206,11 @@
             </div>
         </div>
 
+        <!-- 場景圖片顯示區域 -->
+        <div class="scene-image-container">
+            <img id="scene-img" src="" alt="情境圖片">
+        </div>
+
         <div class="story-box" id="story">故事載入中...</div>
 
         <div class="options-container" id="options"></div>
@@ -206,6 +228,7 @@ let currentSceneId = "L1_START";
 const storyTree = {
     "L1_START": {
         level: 1,
+        image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 1：分組邀請】\n美術課要兩人一組。阿樂走過來問：「我可以跟你一組嗎？但我畫畫不太好看……」\n你會怎麼回應？",
         options: [
             {
@@ -230,6 +253,7 @@ const storyTree = {
     },
     "L2_RUDE": {
         level: 2,
+        image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 2：修補氣氛】\n阿樂被你說完後眼眶泛紅，轉身準備走開。全班同學都在看著你，氣氛很尷尬。\n你現在會怎麼做？",
         options: [
             {
@@ -254,6 +278,7 @@ const storyTree = {
     },
     "L2_PASSIVE": {
         level: 2,
+        image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 2：眼神與回應】\n阿樂站在那裡站了10秒，不知所措地問：「那……你到底願不願意一組？」\n你這時會如何回應？",
         options: [
             {
@@ -278,6 +303,7 @@ const storyTree = {
     },
     "L2_FRIENDLY": {
         level: 2,
+        image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 2：話題輪流】\n阿樂高興地坐下來：「太好了！那你平時喜歡什麼畫風啊？」\n你會如何回應並延續話題？",
         options: [
             {
@@ -302,6 +328,7 @@ const storyTree = {
     },
     "L3_SOLO": {
         level: 3,
+        image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 3：社交距離】\n因為剛才的互動，沒有人敢找你分組，老師幫你指定阿樂為組員。阿樂坐得很遠（超過兩臂距離）。\n你打算如何調整距離？",
         options: [
             {
@@ -326,6 +353,7 @@ const storyTree = {
     },
     "L3_COMMON": {
         level: 3,
+        image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 3：觀察對方狀態】\n你們準備討論主題，阿樂一邊看手錶、一邊頻繁看向教室門口。\n你注意到他的舉動了嗎？你會？",
         options: [
             {
@@ -350,6 +378,7 @@ const storyTree = {
     },
     "L4_THEME": {
         level: 4,
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 4：不同意見的表達】\n阿樂提出了一個你覺得非常無聊的主題點子。\n你要如何表達不同意見？",
         options: [
             {
@@ -374,6 +403,7 @@ const storyTree = {
     },
     "L5_CONFLICT": {
         level: 5,
+        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 5：情緒冷靜機制】\n因為意見不合，阿樂也有點生氣，聲音變大了。你感覺大腦有一股怒火升起。\n你這時會怎麼做？",
         options: [
             {
@@ -398,6 +428,7 @@ const storyTree = {
     },
     "L5_SMOOTH": {
         level: 5,
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 5：同理與鼓勵】\n阿樂猶豫地說：「可是科幻風有點難畫耶……」\n你會如何展現同理心與他合作？",
         options: [
             {
@@ -422,6 +453,7 @@ const storyTree = {
     },
     "L6_EXPRESS": {
         level: 6,
+        image: "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 6：處理意外與表達感受】\n畫畫時，阿樂不小心把顏料水打翻，弄髒了你的筆記本。你感到很煩躁。\n你會如何表達你的感受？",
         options: [
             {
@@ -446,6 +478,7 @@ const storyTree = {
     },
     "L7_REACTION": {
         level: 7,
+        image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 7：面對他人的話語】\n隔壁同學湊過來看你們的畫，笑著說：「哇，你們畫的這隻狗好像怪獸喔哈哈！」\n你會如何冷靜幽默地回應？",
         options: [
             {
@@ -470,6 +503,7 @@ const storyTree = {
     },
     "L8_FINAL": {
         level: 8,
+        image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80",
         scene: "【關卡 8：肯定與感謝】\n作品終於完成了！老師請大家互相讚美組員。\n你會對阿樂說什麼話？",
         options: [
             {
@@ -521,6 +555,9 @@ function showScene() {
     document.getElementById("step-count").innerText = `關卡：${currentData.level} / 8`;
     document.getElementById("score-count").innerText = `社交好感度：${score}`;
     document.getElementById("story").innerText = currentData.scene;
+    
+    // 更新圖片
+    document.getElementById("scene-img").src = currentData.image;
 
     const optionsContainer = document.getElementById("options");
     optionsContainer.innerHTML = "";
@@ -559,18 +596,23 @@ function showEnding() {
 
     let endingTitle = "";
     let endingDesc = "";
+    let endingImage = "";
 
     if (score >= 100) {
         endingTitle = "🏆 結局 A：完美社交大師（解鎖黃金夥伴）";
         endingDesc = "你完美運用了「大腦社交過濾器」、「換位思考」與適當的社交禮儀！阿樂對你無比信任，你成功建立起了良好的同儕互動！";
+        endingImage = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80";
     } else if (score >= 65) {
         endingTitle = "😐 結局 B：漸入佳境的合作者";
         endingDesc = "雖然過程中有一點直白的言語，但你成功靠著修補技巧與冷靜態度完成任務。多練習「大腦過濾網」，你的社交魅力會更上一層樓！";
+        endingImage = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80";
     } else {
         endingTitle = "💔 結局 C：獨行俠的迷思";
         endingDesc = "直白的批評與忽視對方的感受讓這次合作充滿尷尬。請記住：多使用大腦過濾器並站在對方角度想想看，社交會變得更順暢！";
+        endingImage = "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80";
     }
 
+    document.getElementById("scene-img").src = endingImage;
     storyBox.innerHTML = `<strong>${endingTitle}</strong><br><br>${endingDesc}<br><br><strong>最終社交好感度：${score} 分</strong>`;
     document.getElementById("restart-btn").style.display = "block";
 }
